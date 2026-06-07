@@ -1,0 +1,82 @@
+<div class="login-page">
+  <!-- Animated background blobs -->
+  <div class="bg-blob blob-1"></div>
+  <div class="bg-blob blob-2"></div>
+  <div class="bg-blob blob-3"></div>
+
+  <div class="login-card">
+    <!-- Brand -->
+    <div class="brand">
+      <div class="brand-icon">
+        <img src="Robo-logo.png" alt="Robro Logo" class="brand-logo-img" />
+      </div>
+      <p class="brand-tagline">User Management &amp; Image Capture</p>
+    </div>
+
+    <!-- Error banner -->
+    <div class="error-alert" *ngIf="errorMessage" role="alert">
+      <mat-icon class="error-icon">error_outline</mat-icon>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+    <!-- Login form -->
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate autocomplete="on">
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Email address</mat-label>
+        <mat-icon matPrefix>alternate_email</mat-icon>
+        <input
+          matInput
+          type="email"
+          id="email"
+          formControlName="email"
+          placeholder="admin@robro.com"
+          autocomplete="email"
+        />
+        <mat-error *ngIf="email.hasError('required')">Email is required</mat-error>
+        <mat-error *ngIf="email.hasError('email')">Enter a valid email address</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Password</mat-label>
+        <mat-icon matPrefix>lock_outline</mat-icon>
+        <input
+          matInput
+          [type]="hidePassword ? 'password' : 'text'"
+          id="password"
+          formControlName="password"
+          placeholder="••••••••"
+          autocomplete="current-password"
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="hidePassword = !hidePassword"
+          [attr.aria-label]="hidePassword ? 'Show password' : 'Hide password'"
+        >
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="password.hasError('required')">Password is required</mat-error>
+        <mat-error *ngIf="password.hasError('minlength')">
+          Password must be at least 6 characters
+        </mat-error>
+      </mat-form-field>
+
+      <button
+        mat-flat-button
+        id="login-btn"
+        class="login-btn"
+        type="submit"
+        [disabled]="loginForm.invalid || loading"
+      >
+        <mat-spinner *ngIf="loading" diameter="20" class="btn-spinner"></mat-spinner>
+        <span *ngIf="!loading">Sign In</span>
+      </button>
+    </form>
+
+    <p class="hint">
+      <mat-icon class="hint-icon">info_outline</mat-icon>
+      Default admin: <strong>admin&#64;robro.com</strong> / <strong>Admin&#64;123</strong>
+    </p>
+  </div>
+</div>

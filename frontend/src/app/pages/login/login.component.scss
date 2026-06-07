@@ -1,0 +1,306 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+.login-page {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url('/loginbg1.png') center center / cover no-repeat;
+  overflow: hidden;
+  font-family: 'Outfit', sans-serif;
+  z-index: 90;
+}
+
+// ── Animated background blobs (very subtle, no blue wash) ─────────────────
+.bg-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.06; // Drastically reduced so bg image shows clearly
+  animation: blobFloat 12s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+.blob-1 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, #3b82f6, #1d4ed8);
+  top: -100px;
+  left: -150px;
+  animation-delay: 0s;
+}
+
+.blob-2 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, #8b5cf6, #4c1d95);
+  bottom: -80px;
+  right: -100px;
+  animation-delay: -4s;
+}
+
+.blob-3 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, #06b6d4, #0e7490);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: -8s;
+}
+
+@keyframes blobFloat {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(30px, -30px) scale(1.05); }
+  66%  { transform: translate(-20px, 20px) scale(0.97); }
+  100% { transform: translate(10px, -10px) scale(1.03); }
+}
+
+// ── Card — glassmorphism with dark overlay so bg image shows through ──────
+.login-card {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 420px;
+  padding: 44px 40px 36px;
+  // Dark translucent background — not blue, just dark frosted glass
+  background: rgba(8, 10, 28, 0.55);
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  animation: fadeSlideUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  // 15% bigger than previous 0.75 → 0.75 × 1.15 ≈ 0.8625
+  zoom: 0.8625;
+}
+
+// ── Brand ─────────────────────────────────────────────────────────────────
+.brand {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.brand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  // 15% bigger than previous 163px → 187px
+  width: 187px;
+  height: 187px;
+  margin-bottom: 4px; // reduced so text is just below
+}
+
+.brand-logo-img {
+  width: 187px;
+  height: 187px;
+  object-fit: contain;
+  border-radius: 20px;
+  filter:
+    drop-shadow(0 8px 28px rgba(99, 102, 241, 0.55))
+    drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.04);
+  }
+}
+
+.brand-tagline {
+  font-size: 0.97rem; // 10% bigger
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.75); // Bright white-ish, clearly visible
+  letter-spacing: 0.03em;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+  margin: 0; // Just below the logo
+}
+
+// ── Error alert ───────────────────────────────────────────────────────────
+.error-alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 12px;
+  color: #fca5a5;
+  font-size: 0.875rem;
+  animation: fadeSlideUp 0.3s ease;
+
+  .error-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    color: #f87171;
+  }
+}
+
+// ── Form fields ───────────────────────────────────────────────────────────
+.full-width {
+  width: 100%;
+  margin-bottom: 8px;
+
+  mat-icon[matPrefix] {
+    color: rgba(255, 255, 255, 0.55);
+    margin-right: 8px;
+    font-size: 20px;
+  }
+}
+
+// ── Login button ──────────────────────────────────────────────────────────
+.login-btn {
+  width: 100%;
+  height: 52px;
+  margin-top: 12px;
+  border-radius: 14px !important;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  font-family: 'Outfit', sans-serif;
+  background: linear-gradient(90deg, #3b82f6 0%, #6366f1 100%) !important;
+  color: #fff !important;
+  transition: opacity 0.25s, transform 0.2s, box-shadow 0.25s;
+  box-shadow: 0 6px 24px rgba(99, 102, 241, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover:not([disabled]) {
+    opacity: 0.92;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(99, 102, 241, 0.55);
+  }
+
+  &[disabled] {
+    opacity: 0.45 !important;
+    transform: none !important;
+    box-shadow: none !important;
+    cursor: not-allowed;
+  }
+
+  .btn-spinner {
+    --mdc-circular-progress-active-indicator-color: #fff;
+  }
+}
+
+// ── Hint ──────────────────────────────────────────────────────────────────
+.hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 24px;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+
+  strong {
+    color: #93c5fd; // Bright sky blue, highly legible
+    font-weight: 600;
+  }
+
+  .hint-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+    color: rgba(255, 255, 255, 0.6);
+  }
+}
+
+// ── Angular Material Input overrides — glassmorphism dark style ───────────
+::ng-deep .login-card {
+
+  .mat-mdc-text-field-wrapper {
+    background-color: rgba(255, 255, 255, 0.07) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 12px !important;
+    transition: all 0.3s ease !important;
+  }
+
+  .mat-mdc-form-field-focus-overlay {
+    background-color: transparent !important;
+  }
+
+  .mat-mdc-form-field .mdc-line-ripple {
+    display: none !important;
+  }
+
+  // Focus state
+  .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+    background-color: rgba(255, 255, 255, 0.11) !important;
+    border-color: rgba(99, 102, 241, 0.55) !important;
+    box-shadow: 0 0 18px rgba(99, 102, 241, 0.2) !important;
+  }
+
+  // Input text — white
+  .mdc-text-field__input {
+    color: #ffffff !important;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 0.95rem !important;
+  }
+
+  // Placeholder
+  .mdc-text-field__input::placeholder {
+    color: rgba(255, 255, 255, 0.28) !important;
+  }
+
+  // Label (floating)
+  .mat-mdc-floating-label {
+    color: rgba(255, 255, 255, 0.55) !important;
+    font-family: 'Outfit', sans-serif !important;
+  }
+
+  .mat-mdc-form-field.mat-focused .mat-mdc-floating-label {
+    color: #93c5fd !important;
+  }
+
+  // Prefix + suffix icons inside form field
+  .mat-mdc-form-field-icon-prefix .mat-icon,
+  .mat-mdc-form-field-icon-prefix mat-icon {
+    color: rgba(255, 255, 255, 0.5) !important;
+  }
+
+  .mat-mdc-form-field-icon-suffix .mat-icon,
+  .mat-mdc-form-field-icon-suffix mat-icon,
+  .mat-mdc-icon-button mat-icon {
+    color: rgba(255, 255, 255, 0.45) !important;
+  }
+
+  // Error state
+  .mat-mdc-form-field.mat-form-field-invalid .mat-mdc-text-field-wrapper {
+    border-color: rgba(239, 68, 68, 0.5) !important;
+    box-shadow: 0 0 16px rgba(239, 68, 68, 0.15) !important;
+  }
+
+  .mat-mdc-form-field.mat-form-field-invalid .mat-mdc-floating-label {
+    color: #fca5a5 !important;
+  }
+
+  .mat-mdc-form-field-error {
+    color: #fca5a5 !important;
+  }
+}
+
+// ── Keyframes ─────────────────────────────────────────────────────────────
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

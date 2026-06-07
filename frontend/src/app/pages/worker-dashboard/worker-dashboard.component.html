@@ -1,0 +1,180 @@
+<div class="dashboard" [class.collapsed]="themeService.isSidebarCollapsed">
+  <!-- ── Sidebar ────────────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img src="Robo-logo.png" alt="INDIASGO" class="sidebar-logo" />
+      <span class="brand-text" *ngIf="!themeService.isSidebarCollapsed">ROBRO <span class="brand-one">SYSTEMS</span></span>
+      <button mat-icon-button class="sidebar-toggle-btn" (click)="themeService.toggleSidebar()" [matTooltip]="themeService.isSidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'">
+        <mat-icon>{{ themeService.isSidebarCollapsed ? 'last_page' : 'first_page' }}</mat-icon>
+      </button>
+    </div>
+
+    <!-- Menu Section -->
+    <div class="menu-section">
+      <span class="menu-label" *ngIf="!themeService.isSidebarCollapsed">MAIN MENU</span>
+      <nav class="sidebar-nav">
+        <!-- Dashboard link -->
+        <a class="nav-item active" routerLink="/dashboard" [matTooltip]="themeService.isSidebarCollapsed ? 'Dashboard' : ''">
+          <mat-icon>grid_view</mat-icon>
+          <span>Dashboard</span>
+          <span class="active-dot"></span>
+        </a>
+        <!-- Camera link -->
+        <a class="nav-item" routerLink="/camera" [matTooltip]="themeService.isSidebarCollapsed ? 'Camera' : ''">
+          <mat-icon>photo_camera</mat-icon>
+          <span>Camera</span>
+        </a>
+        <!-- Settings link -->
+        <a class="nav-item" routerLink="/settings" [matTooltip]="themeService.isSidebarCollapsed ? 'Settings' : ''">
+          <mat-icon>settings</mat-icon>
+          <span>Settings</span>
+        </a>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- ── Main Content Area ────────────────────────────────────────── -->
+  <div class="main-content">
+    <mat-toolbar class="topbar">
+      <!-- Left Search Bar -->
+      <div class="search-bar-container">
+        <div class="search-bar">
+          <mat-icon class="search-icon">search</mat-icon>
+          <input type="text" placeholder="Search anything..." />
+          <span class="search-shortcut">⌘ K</span>
+        </div>
+      </div>
+
+      <span class="spacer"></span>
+
+      <div class="topbar-right">
+        <!-- Action Icons -->
+        <button mat-icon-button class="action-icon-btn"><mat-icon>chat_bubble_outline</mat-icon></button>
+        <button mat-icon-button class="action-icon-btn"><mat-icon>notifications_none</mat-icon></button>
+        <button mat-icon-button class="action-icon-btn"><mat-icon>help_outline</mat-icon></button>
+
+        <!-- Profile trigger -->
+        <div class="profile-trigger" [matMenuTriggerFor]="profileMenu">
+          <div class="profile-avatar">
+            {{ currentUser?.name?.[0]?.toUpperCase() || 'W' }}
+          </div>
+          <div class="profile-info">
+            <span class="profile-name">{{ currentUser?.name }}</span>
+            <span class="profile-role">{{ currentUser?.role }}</span>
+          </div>
+          <mat-icon class="profile-arrow">keyboard_arrow_down</mat-icon>
+        </div>
+
+        <mat-menu #profileMenu="matMenu" class="profile-dropdown-menu" xPosition="before">
+          <div class="menu-user-header" (click)="$event.stopPropagation()">
+            <div class="menu-avatar">
+              {{ currentUser?.name?.[0]?.toUpperCase() || 'W' }}
+            </div>
+            <div class="menu-user-details">
+              <span class="menu-user-name">{{ currentUser?.name }}</span>
+              <span class="menu-user-email">{{ currentUser?.email }}</span>
+            </div>
+          </div>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="logout()" id="logout-btn" class="dropdown-item logout-item">
+            <mat-icon class="logout-icon">logout</mat-icon>
+            <span class="logout-text">Logout</span>
+          </button>
+        </mat-menu>
+      </div>
+    </mat-toolbar>
+
+    <!-- ── Greeting Banner ────────────────────────────────────────── -->
+    <div class="greeting-banner">
+      <div class="greeting-left">
+        <h1 class="greeting-title">{{ getGreeting() }}</h1>
+        <p class="greeting-subtitle">Here is your recent gallery and updates.</p>
+      </div>
+      <div class="greeting-right">
+        <div class="date-time-box">
+          <mat-icon class="calendar-icon">calendar_today</mat-icon>
+          <div class="date-time-text">
+            <span class="date-part">{{ currentTime | date:'EEE, dd MMM, yyyy' }}</span>
+            <span class="time-part">{{ (currentTime | date:'hh:mm:ss a')?.toLowerCase() }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Page body ─────────────────────────────────────────────── -->
+    <main class="page-body">
+      <!-- ── Gallery panel ───────────────────────────── -->
+      <section class="gallery-panel">
+        <div class="gallery-header">
+          <div class="section-header">
+            <h2 class="section-title">
+              <mat-icon>photo_library</mat-icon>
+              My Gallery
+            </h2>
+            <span class="gallery-count">{{ filtered.length }} photo{{ filtered.length !== 1 ? 's' : '' }}</span>
+          </div>
+        </div>
+
+        <div class="gallery-skeleton" *ngIf="galleryLoading">
+          <div class="skeleton-card" *ngFor="let i of [1,2,3,4]"></div>
+        </div>
+
+        <div class="gallery-grid" *ngIf="!galleryLoading && filtered.length > 0">
+          <div class="gallery-card" *ngFor="let img of filtered" (click)="openLightbox(img)">
+            <div class="you-badge" *ngIf="isOwnImage(img)">You</div>
+            <div class="gallery-img-wrap">
+              <img [src]="getImageUrl(img.filepath)" [alt]="img.filename" loading="lazy" class="gallery-img" />
+              <div class="gallery-overlay">
+                <mat-icon class="zoom-icon">open_in_full</mat-icon>
+              </div>
+            </div>
+            <div class="gallery-meta">
+              <div class="meta-row">
+                <span class="uploader-name">{{ getUploaderName(img) }}</span>
+                <span class="role-chip" [ngClass]="getRoleClass(getUploaderRole(img))">
+                  {{ getUploaderRole(img) }}
+                </span>
+              </div>
+              <p class="gallery-date">{{ img.capturedAt | date:'MMM d, y • h:mm a' }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="gallery-empty" *ngIf="!galleryLoading && filtered.length === 0">
+          <mat-icon class="empty-icon">photo_camera</mat-icon>
+          <p>No captures yet.<br />Take your first photo in the Camera tab!</p>
+        </div>
+      </section>
+    </main>
+
+    <!-- ── Lightbox overlay ───────────────────────────────────────── -->
+    <div class="lightbox-backdrop" *ngIf="lightboxImage" (click)="onBackdropClick($event)">
+      <div class="lightbox-box">
+        <button mat-icon-button class="lightbox-close" id="lightbox-close-btn" (click)="closeLightbox()" matTooltip="Close (ESC)">
+          <mat-icon>close</mat-icon>
+        </button>
+        <img [src]="getImageUrl(lightboxImage.filepath)" [alt]="lightboxImage.filename" class="lightbox-img" />
+        <div class="lightbox-info">
+          <div class="lightbox-meta">
+            <mat-icon class="lb-icon">account_circle</mat-icon>
+            <span class="lb-name">{{ getUploaderName(lightboxImage) }}</span>
+            <span class="role-chip" [ngClass]="getRoleClass(getUploaderRole(lightboxImage))">
+              {{ getUploaderRole(lightboxImage) }}
+            </span>
+            <span *ngIf="isOwnImage(lightboxImage)" class="you-chip">You</span>
+          </div>
+          <div class="lb-right">
+            <div class="lb-date">
+              <mat-icon class="lb-date-icon">schedule</mat-icon>
+              {{ lightboxImage.capturedAt | date:'MMMM d, y • h:mm a' }}
+            </div>
+            <button mat-flat-button id="lightbox-download-btn" class="lb-download-btn" (click)="downloadImage(lightboxImage)" matTooltip="Download photo">
+              <mat-icon>download</mat-icon>
+              Download
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

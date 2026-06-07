@@ -1,0 +1,318 @@
+<div class="camera-page" [class.collapsed]="themeService.isSidebarCollapsed">
+  <!-- ── Sidebar ────────────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img src="Robo-logo.png" alt="INDIASGO" class="sidebar-logo" />
+      <span class="brand-text" *ngIf="!themeService.isSidebarCollapsed">ROBRO <span class="brand-one">SYSTEMS</span></span>
+      <button mat-icon-button class="sidebar-toggle-btn" (click)="themeService.toggleSidebar()" [matTooltip]="themeService.isSidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'">
+        <mat-icon>{{ themeService.isSidebarCollapsed ? 'last_page' : 'first_page' }}</mat-icon>
+      </button>
+    </div>
+
+
+    <!-- Menu Section -->
+    <div class="menu-section">
+      <span class="menu-label" *ngIf="!themeService.isSidebarCollapsed">MAIN MENU</span>
+      <nav class="sidebar-nav">
+        <!-- Dashboard link (Admin) -->
+        <a *ngIf="currentUser?.role === 'Admin'" class="nav-item" routerLink="/admin" [matTooltip]="themeService.isSidebarCollapsed ? 'Dashboard' : ''">
+          <mat-icon>grid_view</mat-icon>
+          <span>Dashboard</span>
+        </a>
+        <!-- Dashboard link (Worker/Supervisor) -->
+        <a *ngIf="currentUser?.role !== 'Admin'" class="nav-item" routerLink="/dashboard" [matTooltip]="themeService.isSidebarCollapsed ? 'Dashboard' : ''">
+          <mat-icon>grid_view</mat-icon>
+          <span>Dashboard</span>
+        </a>
+        <!-- Camera link (Active on this page) -->
+        <a class="nav-item active" routerLink="/camera" [matTooltip]="themeService.isSidebarCollapsed ? 'Camera' : ''">
+          <mat-icon>photo_camera</mat-icon>
+          <span>Camera</span>
+          <span class="active-dot"></span>
+        </a>
+        <!-- Settings link -->
+        <a class="nav-item" routerLink="/settings" [matTooltip]="themeService.isSidebarCollapsed ? 'Settings' : ''">
+          <mat-icon>settings</mat-icon>
+          <span>Settings</span>
+        </a>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- ── Main Content Area ────────────────────────────────────────── -->
+  <div class="main-content">
+    <!-- ── Toolbar ──────────────────────────────────────────────── -->
+    <mat-toolbar class="topbar">
+
+      <!-- Left Search Bar -->
+      <div class="search-bar-container">
+        <div class="search-bar">
+          <mat-icon class="search-icon">search</mat-icon>
+          <input type="text" placeholder="Search anything..." />
+          <span class="search-shortcut">⌘ K</span>
+        </div>
+      </div>
+
+      <span class="spacer"></span>
+
+      <div class="topbar-right">
+        <!-- Action Icons -->
+        <button mat-icon-button class="action-icon-btn"><mat-icon>chat_bubble_outline</mat-icon></button>
+        
+        <button mat-icon-button class="action-icon-btn notification-btn" [matMenuTriggerFor]="notificationsMenu">
+          <mat-icon>notifications_none</mat-icon>
+          <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+        </button>
+
+        <button mat-icon-button class="action-icon-btn"><mat-icon>help_outline</mat-icon></button>
+
+        <!-- Redesigned Notifications Dropdown Menu -->
+        <mat-menu #notificationsMenu="matMenu" class="notifications-dropdown-menu" xPosition="before">
+          <div class="notifications-header" (click)="$event.stopPropagation()">
+            <span class="notifications-title">Notifications</span>
+            <button mat-button class="mark-read-btn" *ngIf="unreadCount > 0" (click)="markAllAsRead()">
+              Mark all as read
+            </button>
+          </div>
+          
+          <mat-divider></mat-divider>
+          
+          <div class="notifications-list" (click)="$event.stopPropagation()">
+            <div *ngIf="notifications.length === 0" class="notifications-empty">
+              <span>No notifications yet</span>
+            </div>
+            
+            <div *ngFor="let notif of notifications" class="notification-item-row" [class.unread]="!notif.isRead">
+              <div class="notification-avatar">
+                {{ notif.userId?.name ? notif.userId.name.charAt(0).toUpperCase() : 'U' }}
+              </div>
+              <div class="notification-content-wrap">
+                <span class="notification-message">{{ notif.message }}</span>
+                <span class="notification-time">{{ notif.createdAt | date:'MMM d • h:mm a' }}</span>
+              </div>
+            </div>
+          </div>
+        </mat-menu>
+
+        <!-- Profile dropdown trigger matching reference design -->
+        <div class="profile-trigger" [matMenuTriggerFor]="profileMenu">
+          <div class="profile-avatar">
+            {{ currentUser?.name?.[0]?.toUpperCase() || 'A' }}
+          </div>
+          <div class="profile-info">
+            <span class="profile-name">{{ currentUser?.name }}</span>
+            <span class="profile-role">{{ currentUser?.role }}</span>
+          </div>
+          <mat-icon class="profile-arrow">keyboard_arrow_down</mat-icon>
+        </div>
+
+        <!-- Redesigned Profile Dropdown Menu -->
+        <mat-menu #profileMenu="matMenu" class="profile-dropdown-menu" xPosition="before">
+          <div class="menu-user-header" (click)="$event.stopPropagation()">
+            <div class="menu-avatar">
+              {{ currentUser?.name?.[0]?.toUpperCase() || 'A' }}
+            </div>
+            <div class="menu-user-details">
+              <span class="menu-user-name">{{ currentUser?.name }}</span>
+              <span class="menu-user-email">{{ currentUser?.email || 'superadmin@indiasgo.com' }}</span>
+            </div>
+          </div>
+          
+          <mat-divider></mat-divider>
+          
+          <button mat-menu-item (click)="openThemeDialog()" id="theme-btn" class="dropdown-item">
+            <mat-icon>palette</mat-icon>
+            <span class="dropdown-item-text">Visual Theme</span>
+            <span class="dropdown-theme-value">{{ getThemeName() }}</span>
+            <mat-icon class="dropdown-arrow-right">chevron_right</mat-icon>
+          </button>
+
+          <button mat-menu-item class="dropdown-item">
+            <mat-icon>person_outline</mat-icon>
+            <span class="dropdown-item-text">Profile</span>
+          </button>
+          
+          <mat-divider></mat-divider>
+          
+          <button mat-menu-item (click)="logout()" id="logout-btn" class="dropdown-item logout-item">
+            <mat-icon class="logout-icon">logout</mat-icon>
+            <span class="logout-text">Logout</span>
+          </button>
+        </mat-menu>
+      </div> <!-- topbar-right -->
+    </mat-toolbar>
+
+    <!-- ── Main ─────────────────────────────────────────────────── -->
+    <main class="page-body">
+      <div class="two-col">
+
+        <!-- ── Left: Camera panel ─────────────────────────────── -->
+        <section class="camera-panel">
+          <div class="section-header">
+            <h2 class="section-title">
+              <mat-icon>videocam</mat-icon>
+              Live Camera
+            </h2>
+            <button mat-icon-button id="refresh-cam-btn" (click)="startCamera()" matTooltip="Restart camera"
+              class="refresh-btn">
+              <mat-icon>refresh</mat-icon>
+            </button>
+          </div>
+
+          <!-- Viewport -->
+          <div class="viewport" [class.has-error]="cameraError">
+            <video #videoEl autoplay playsinline muted class="video-feed" [class.hidden]="capturedSrc"></video>
+
+            <img *ngIf="capturedSrc" [src]="capturedSrc" alt="Captured photo" class="captured-preview" />
+
+            <canvas #canvasEl class="hidden-canvas"></canvas>
+
+            <!-- Error overlay -->
+            <div class="error-overlay" *ngIf="cameraError">
+              <mat-icon class="error-icon">no_photography</mat-icon>
+              <p>{{ cameraError }}</p>
+              <button mat-flat-button id="retry-cam-btn" (click)="startCamera()">Try Again</button>
+            </div>
+
+            <!-- Live badge -->
+            <div class="live-badge" *ngIf="!capturedSrc && !cameraError">
+              <span class="live-dot"></span>
+              LIVE
+            </div>
+          </div>
+
+          <!-- Controls -->
+          <div class="controls">
+            <ng-container *ngIf="!capturedSrc">
+              <button mat-flat-button id="capture-btn" class="capture-btn" (click)="capture()"
+                [disabled]="!!cameraError">
+                <mat-icon>camera</mat-icon>
+                Capture Photo
+              </button>
+            </ng-container>
+
+            <ng-container *ngIf="capturedSrc">
+              <button mat-stroked-button id="retake-btn" class="retake-btn" (click)="retake()"
+                [disabled]="uploading">
+                <mat-icon>replay</mat-icon>
+                Retake
+              </button>
+
+              <button mat-flat-button id="upload-btn" class="upload-btn" (click)="upload()"
+                [disabled]="uploading">
+                <mat-spinner *ngIf="uploading" diameter="18" class="btn-spinner"></mat-spinner>
+                <mat-icon *ngIf="!uploading">cloud_upload</mat-icon>
+                {{ uploading ? 'Uploading…' : 'Upload Photo' }}
+              </button>
+            </ng-container>
+          </div>
+        </section>
+
+        <!-- ── Right: Gallery panel ───────────────────────────── -->
+        <section class="gallery-panel">
+
+          <!-- Gallery header -->
+          <div class="gallery-header">
+            <div class="section-header">
+              <h2 class="section-title">
+                <mat-icon>photo_library</mat-icon>
+                {{ galleryTitle }}
+              </h2>
+              <span class="gallery-count">{{ filteredCount }} photo{{ filteredCount !== 1 ? 's' : '' }}</span>
+            </div>
+
+            <!-- Role filter — Admin only -->
+            <div class="filter-bar" *ngIf="isAdmin()">
+              <button *ngFor="let f of filterOptions" class="filter-btn" [class.active]="activeFilter === f"
+                [attr.id]="'filter-' + f.toLowerCase()" (click)="applyFilter(f)">
+                {{ f }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Loading skeleton -->
+          <div class="gallery-skeleton" *ngIf="galleryLoading">
+            <div class="skeleton-card" *ngFor="let i of [1,2,3,4]"></div>
+          </div>
+
+          <!-- Gallery grid -->
+          <div class="gallery-grid" *ngIf="!galleryLoading && filtered.length > 0">
+            <div class="gallery-card" *ngFor="let img of filtered" (click)="openLightbox(img)">
+              <!-- "You" badge -->
+              <div class="you-badge" *ngIf="isOwnImage(img)">You</div>
+
+              <div class="gallery-img-wrap">
+                <img [src]="getImageUrl(img.filepath)" [alt]="img.filename" loading="lazy" class="gallery-img" />
+                <div class="gallery-overlay">
+                  <mat-icon class="zoom-icon">open_in_full</mat-icon>
+                </div>
+              </div>
+
+              <div class="gallery-meta">
+                <div class="meta-row">
+                  <span class="uploader-name">{{ getUploaderName(img) }}</span>
+                  <span class="role-chip" [ngClass]="getRoleClass(getUploaderRole(img))">
+                    {{ getUploaderRole(img) }}
+                  </span>
+                </div>
+                <p class="gallery-date">{{ img.capturedAt | date:'MMM d, y • h:mm a' }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty state -->
+          <div class="gallery-empty" *ngIf="!galleryLoading && filtered.length === 0">
+            <mat-icon class="empty-icon">photo_camera</mat-icon>
+            <p>No captures yet.<br />Take your first photo!</p>
+          </div>
+
+        </section>
+      </div>
+    </main>
+
+    <!-- ── Lightbox overlay ───────────────────────────────────────── -->
+    <div class="lightbox-backdrop" *ngIf="lightboxImage" (click)="onBackdropClick($event)">
+      <div class="lightbox-box">
+        <!-- Close button -->
+        <button mat-icon-button class="lightbox-close" id="lightbox-close-btn" (click)="closeLightbox()"
+          matTooltip="Close (ESC)">
+          <mat-icon>close</mat-icon>
+        </button>
+
+        <!-- Image -->
+        <img [src]="getImageUrl(lightboxImage.filepath)" [alt]="lightboxImage.filename" class="lightbox-img" />
+
+        <!-- Info strip -->
+        <div class="lightbox-info">
+          <div class="lightbox-meta">
+            <mat-icon class="lb-icon">account_circle</mat-icon>
+            <span class="lb-name">{{ getUploaderName(lightboxImage) }}</span>
+            <span class="role-chip" [ngClass]="getRoleClass(getUploaderRole(lightboxImage))">
+              {{ getUploaderRole(lightboxImage) }}
+            </span>
+            <span *ngIf="isOwnImage(lightboxImage)" class="you-chip">You</span>
+          </div>
+
+          <div class="lb-right">
+            <div class="lb-date">
+              <mat-icon class="lb-date-icon">schedule</mat-icon>
+              {{ lightboxImage.capturedAt | date:'MMMM d, y • h:mm a' }}
+            </div>
+
+            <button *ngIf="isAdmin() || isOwnImage(lightboxImage)" mat-flat-button color="warn" class="lb-delete-btn"
+              (click)="deleteImage(lightboxImage)" matTooltip="Delete photo">
+              <mat-icon>delete</mat-icon>
+              Delete
+            </button>
+            <button mat-flat-button id="lightbox-download-btn" class="lb-download-btn"
+              (click)="downloadImage(lightboxImage)" matTooltip="Download photo">
+              <mat-icon>download</mat-icon>
+              Download
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div> <!-- main-content -->
+</div>

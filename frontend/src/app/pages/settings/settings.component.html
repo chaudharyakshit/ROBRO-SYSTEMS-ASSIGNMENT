@@ -1,0 +1,383 @@
+<div class="dashboard" [class.collapsed]="themeService.isSidebarCollapsed">
+  <!-- ── Sidebar ────────────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img src="Robo-logo.png" alt="INDIASGO" class="sidebar-logo" />
+      <span class="brand-text" *ngIf="!themeService.isSidebarCollapsed">ROBRO <span class="brand-one">SYSTEMS</span></span>
+      <button mat-icon-button class="sidebar-toggle-btn" (click)="themeService.toggleSidebar()" [matTooltip]="themeService.isSidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'">
+        <mat-icon>{{ themeService.isSidebarCollapsed ? 'last_page' : 'first_page' }}</mat-icon>
+      </button>
+    </div>
+
+    <!-- Menu Section -->
+    <div class="menu-section">
+      <span class="menu-label" *ngIf="!themeService.isSidebarCollapsed">MAIN MENU</span>
+      <nav class="sidebar-nav">
+        <!-- Dashboard link (Admin) -->
+        <a *ngIf="currentUser?.role === 'Admin'" class="nav-item" routerLink="/admin" [matTooltip]="themeService.isSidebarCollapsed ? 'Dashboard' : ''">
+          <mat-icon>grid_view</mat-icon>
+          <span>Dashboard</span>
+        </a>
+        <!-- Dashboard link (Worker/Supervisor) -->
+        <a *ngIf="currentUser?.role !== 'Admin'" class="nav-item" routerLink="/dashboard" [matTooltip]="themeService.isSidebarCollapsed ? 'Dashboard' : ''">
+          <mat-icon>grid_view</mat-icon>
+          <span>Dashboard</span>
+        </a>
+        <!-- Camera link -->
+        <a class="nav-item" routerLink="/camera" [matTooltip]="themeService.isSidebarCollapsed ? 'Camera' : ''">
+          <mat-icon>photo_camera</mat-icon>
+          <span>Camera</span>
+        </a>
+        <!-- Settings link (Active) -->
+        <a class="nav-item active" routerLink="/settings" [matTooltip]="themeService.isSidebarCollapsed ? 'Settings' : ''">
+          <mat-icon>settings</mat-icon>
+          <span>Settings</span>
+          <span class="active-dot"></span>
+        </a>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- ── Main Content Area ────────────────────────────────────────── -->
+  <div class="main-content">
+    <!-- ── Toolbar ────────────────────────────────────────────────── -->
+    <mat-toolbar class="topbar">
+      <!-- Left Search Bar -->
+      <div class="search-bar-container">
+        <div class="search-bar">
+          <mat-icon class="search-icon">search</mat-icon>
+          <input type="text" placeholder="Search settings..." />
+          <span class="search-shortcut">⌘ K</span>
+        </div>
+      </div>
+
+      <span class="spacer"></span>
+
+      <div class="topbar-right">
+        <!-- Action Icons -->
+        <button mat-icon-button class="action-icon-btn"><mat-icon>chat_bubble_outline</mat-icon></button>
+        
+        <button mat-icon-button class="action-icon-btn notification-btn" [matMenuTriggerFor]="notificationsMenu">
+          <mat-icon>notifications_none</mat-icon>
+          <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+        </button>
+
+        <button mat-icon-button class="action-icon-btn"><mat-icon>help_outline</mat-icon></button>
+
+        <!-- Notifications Dropdown Menu -->
+        <mat-menu #notificationsMenu="matMenu" class="notifications-dropdown-menu" xPosition="before">
+          <div class="notifications-header" (click)="$event.stopPropagation()">
+            <span class="notifications-title">Notifications</span>
+            <button mat-button class="mark-read-btn" *ngIf="unreadCount > 0" (click)="markAllAsRead()">
+              Mark all as read
+            </button>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="notifications-list" (click)="$event.stopPropagation()">
+            <div *ngIf="notifications.length === 0" class="notifications-empty">
+              <span>No notifications yet</span>
+            </div>
+            <div *ngFor="let notif of notifications" class="notification-item-row" [class.unread]="!notif.isRead">
+              <div class="notification-avatar">
+                {{ notif.userId?.name ? notif.userId.name.charAt(0).toUpperCase() : 'U' }}
+              </div>
+              <div class="notification-content-wrap">
+                <span class="notification-message">{{ notif.message }}</span>
+                <span class="notification-time">{{ notif.createdAt | date:'MMM d • h:mm a' }}</span>
+              </div>
+            </div>
+          </div>
+        </mat-menu>
+
+        <!-- Profile trigger -->
+        <div class="profile-trigger" [matMenuTriggerFor]="profileMenu">
+          <div class="profile-avatar">
+            {{ currentUser?.name?.[0]?.toUpperCase() || 'A' }}
+          </div>
+          <div class="profile-info">
+            <span class="profile-name">{{ currentUser?.name }}</span>
+            <span class="profile-role">{{ currentUser?.role }}</span>
+          </div>
+          <mat-icon class="profile-arrow">keyboard_arrow_down</mat-icon>
+        </div>
+
+        <!-- Profile Dropdown Menu -->
+        <mat-menu #profileMenu="matMenu" class="profile-dropdown-menu" xPosition="before">
+          <div class="menu-user-header" (click)="$event.stopPropagation()">
+            <div class="menu-avatar">
+              {{ currentUser?.name?.[0]?.toUpperCase() || 'A' }}
+            </div>
+            <div class="menu-user-details">
+              <span class="menu-user-name">{{ currentUser?.name }}</span>
+              <span class="menu-user-email">{{ currentUser?.email || 'superadmin@indiasgo.com' }}</span>
+            </div>
+          </div>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="openThemeDialog()" id="theme-btn" class="dropdown-item">
+            <mat-icon>palette</mat-icon>
+            <span class="dropdown-item-text">Visual Theme</span>
+            <span class="dropdown-theme-value">{{ getThemeName() }}</span>
+            <mat-icon class="dropdown-arrow-right">chevron_right</mat-icon>
+          </button>
+          <button mat-menu-item class="dropdown-item">
+            <mat-icon>person_outline</mat-icon>
+            <span class="dropdown-item-text">Profile</span>
+          </button>
+          <mat-divider></mat-divider>
+          <button mat-menu-item (click)="logout()" id="logout-btn" class="dropdown-item logout-item">
+            <mat-icon class="logout-icon">logout</mat-icon>
+            <span class="logout-text">Logout</span>
+          </button>
+        </mat-menu>
+      </div>
+    </mat-toolbar>
+
+    <!-- ── Settings Layout ─────────────────────────────────────────────── -->
+    <div class="page-header settings-page-header">
+      <div class="header-text">
+        <h2>Settings</h2>
+        <p>Manage your account & system preferences</p>
+      </div>
+      <button mat-stroked-button class="save-btn" (click)="saveSettings()">
+        <mat-icon>save</mat-icon> Save Changes
+      </button>
+    </div>
+
+    <div class="settings-layout">
+      <!-- Settings Inner Sidebar -->
+      <aside class="settings-sidebar">
+        <ul class="settings-menu">
+          <li (click)="setTab('account')" [class.active]="activeTab === 'account'">
+            <mat-icon>person_outline</mat-icon> My Account
+          </li>
+          <li (click)="setTab('security')" [class.active]="activeTab === 'security'">
+            <mat-icon>lock_outline</mat-icon> Security
+          </li>
+          <li (click)="setTab('notifications')" [class.active]="activeTab === 'notifications'">
+            <mat-icon>notifications_none</mat-icon> Notifications
+          </li>
+          <li (click)="setTab('appearance')" [class.active]="activeTab === 'appearance'">
+            <mat-icon>palette</mat-icon> Appearance
+          </li>
+          <li (click)="setTab('localization')" [class.active]="activeTab === 'localization'">
+            <mat-icon>language</mat-icon> Localization
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Settings Content Area -->
+      <div class="settings-content">
+        
+        <!-- Tab: My Account -->
+        <div class="settings-panel" *ngIf="activeTab === 'account'">
+          <div class="settings-card">
+            <div class="card-header">
+              <h3>Personal Details</h3>
+              <p>Update your profile information</p>
+            </div>
+            <div class="card-body form-grid">
+              <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" [value]="currentUser?.name" class="settings-input">
+              </div>
+              <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" [value]="currentUser?.email" class="settings-input">
+              </div>
+              <div class="form-group">
+                <label>Designation</label>
+                <input type="text" [value]="currentUser?.role" class="settings-input">
+              </div>
+              <div class="form-group">
+                <label>Phone</label>
+                <input type="text" placeholder="+1 234 567 890" class="settings-input">
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="card-header">
+              <h3>Role & Permissions</h3>
+              <p>Your access level and role in the system</p>
+            </div>
+            <div class="card-body">
+              <div class="role-badge-row">
+                <div class="role-avatar">{{ currentUser?.role?.[0]?.toUpperCase() || 'R' }}</div>
+                <div class="role-info">
+                  <span class="role-title">{{ currentUser?.role || 'Super Admin' }}</span>
+                  <span class="role-email">{{ currentUser?.email }}</span>
+                </div>
+                <span class="role-tag">{{ currentUser?.role?.toUpperCase() || 'ADMIN' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: Security -->
+        <div class="settings-panel" *ngIf="activeTab === 'security'">
+          <div class="settings-card">
+            <div class="card-header">
+              <h3>Change Password</h3>
+              <p>Use a strong password with at least 8 characters</p>
+            </div>
+            <div class="card-body">
+              <div class="form-group full-width">
+                <label>Current Password</label>
+                <div class="input-with-icon">
+                  <input [type]="hideCurrentPassword ? 'password' : 'text'" class="settings-input">
+                  <mat-icon class="input-icon" (click)="hideCurrentPassword = !hideCurrentPassword">
+                    {{ hideCurrentPassword ? 'visibility_off' : 'visibility' }}
+                  </mat-icon>
+                </div>
+              </div>
+              <div class="form-group full-width">
+                <label>New Password</label>
+                <div class="input-with-icon">
+                  <input [type]="hideNewPassword ? 'password' : 'text'" class="settings-input">
+                  <mat-icon class="input-icon" (click)="hideNewPassword = !hideNewPassword">
+                    {{ hideNewPassword ? 'visibility_off' : 'visibility' }}
+                  </mat-icon>
+                </div>
+              </div>
+              <div class="form-group full-width">
+                <label>Confirm New Password</label>
+                <div class="input-with-icon">
+                  <input [type]="hideConfirmPassword ? 'password' : 'text'" class="settings-input">
+                  <mat-icon class="input-icon" (click)="hideConfirmPassword = !hideConfirmPassword">
+                    {{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}
+                  </mat-icon>
+                </div>
+              </div>
+              <button mat-stroked-button class="outline-btn mt-3" (click)="updatePassword()">
+                <mat-icon>lock_outline</mat-icon> Update Password
+              </button>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="card-header">
+              <h3>Session & Access</h3>
+              <p>Control your session security</p>
+            </div>
+            <div class="card-body">
+              <div class="form-group select-group">
+                <label>Auto-logout after inactivity</label>
+                <select class="settings-input">
+                  <option>30 minutes</option>
+                  <option>1 hour</option>
+                  <option>4 hours</option>
+                </select>
+              </div>
+              
+              <div class="security-warning">
+                <mat-icon>warning_amber</mat-icon>
+                <span>Logging out from all devices will terminate all active sessions immediately. Use this if you suspect unauthorized access.</span>
+              </div>
+
+              <button mat-stroked-button class="outline-btn" (click)="logoutAll()">
+                Logout from all other devices
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: Notifications -->
+        <div class="settings-panel" *ngIf="activeTab === 'notifications'">
+          <div class="settings-card">
+            <div class="card-header">
+              <h3>Your Notifications</h3>
+              <p>Recent activity across your workspace</p>
+            </div>
+            <div class="card-body">
+              <div *ngIf="notifications.length === 0" class="empty-state">
+                <mat-icon class="empty-icon">notifications_off</mat-icon>
+                <h3>No notifications yet</h3>
+                <p>You have 0 new notifications. We'll alert you when there's activity.</p>
+              </div>
+              
+              <div class="notifications-list" *ngIf="notifications.length > 0">
+                <div *ngFor="let notif of notifications" class="notification-item-row" [class.unread]="!notif.isRead">
+                  <div class="notification-avatar">
+                    {{ notif.userId?.name ? notif.userId.name.charAt(0).toUpperCase() : 'U' }}
+                  </div>
+                  <div class="notification-content-wrap">
+                    <span class="notification-message">{{ notif.message }}</span>
+                    <span class="notification-time">{{ notif.createdAt | date:'MMM d, y • h:mm a' }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: Appearance -->
+        <div class="settings-panel" *ngIf="activeTab === 'appearance'">
+          <div class="settings-card">
+            <div class="card-header">
+              <h3>Theme Preferences</h3>
+              <p>Customize the look and feel of the application</p>
+            </div>
+            <div class="card-body">
+              <div class="themes-grid">
+                <div class="theme-card" 
+                     *ngFor="let t of themes" 
+                     [class.active]="themeService.theme === t.id"
+                     (click)="setTheme(t.id)">
+                  <div class="theme-preview" [ngClass]="'preview-' + t.id">
+                    <mat-icon class="check-icon" *ngIf="themeService.theme === t.id">check_circle</mat-icon>
+                  </div>
+                  <span class="theme-name">{{ t.name }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: Localization -->
+        <div class="settings-panel" *ngIf="activeTab === 'localization'">
+          <div class="settings-card">
+            <div class="card-header">
+              <h3>Regional Settings</h3>
+              <p>Configure timezone, currency and date format</p>
+            </div>
+            <div class="card-body form-grid">
+              <div class="form-group select-group">
+                <label>Timezone</label>
+                <select class="settings-input">
+                  <option>Asia/Kolkata</option>
+                  <option>America/New_York</option>
+                  <option>Europe/London</option>
+                </select>
+              </div>
+              <div class="form-group select-group">
+                <label>Currency</label>
+                <select class="settings-input">
+                  <option>₹ Indian Rupee (INR)</option>
+                  <option>$ US Dollar (USD)</option>
+                  <option>€ Euro (EUR)</option>
+                </select>
+              </div>
+              <div class="form-group select-group">
+                <label>Date Format</label>
+                <select class="settings-input">
+                  <option>DD/MM/YYYY</option>
+                  <option>MM/DD/YYYY</option>
+                  <option>YYYY-MM-DD</option>
+                </select>
+              </div>
+              <div class="form-group select-group">
+                <label>Language</label>
+                <select class="settings-input">
+                  <option>English</option>
+                  <option>Hindi</option>
+                  <option>Spanish</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

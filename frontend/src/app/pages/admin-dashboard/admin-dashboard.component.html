@@ -1,0 +1,298 @@
+<div class="dashboard" [class.collapsed]="themeService.isSidebarCollapsed">
+  <!-- ── Sidebar ────────────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img src="Robo-logo.png" alt="INDIASGO" class="sidebar-logo" />
+      <span class="brand-text" *ngIf="!themeService.isSidebarCollapsed">ROBRO <span class="brand-one">SYSTEMS</span></span>
+      <button mat-icon-button class="sidebar-toggle-btn" (click)="themeService.toggleSidebar()" [matTooltip]="themeService.isSidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'">
+        <mat-icon>{{ themeService.isSidebarCollapsed ? 'last_page' : 'first_page' }}</mat-icon>
+      </button>
+    </div>
+
+
+
+    <!-- Menu Section -->
+    <div class="menu-section">
+      <span class="menu-label" *ngIf="!themeService.isSidebarCollapsed">MAIN MENU</span>
+      <nav class="sidebar-nav">
+        <!-- Active link Dashboard -->
+        <a class="nav-item active" routerLink="/admin" [matTooltip]="themeService.isSidebarCollapsed ? 'Dashboard' : ''">
+          <mat-icon>grid_view</mat-icon>
+          <span>Dashboard</span>
+          <span class="active-dot"></span>
+        </a>
+        <!-- Camera link -->
+        <a class="nav-item" routerLink="/camera" [matTooltip]="themeService.isSidebarCollapsed ? 'Camera' : ''">
+          <mat-icon>photo_camera</mat-icon>
+          <span>Camera</span>
+        </a>
+        <!-- Settings link -->
+        <a class="nav-item" routerLink="/settings" [matTooltip]="themeService.isSidebarCollapsed ? 'Settings' : ''">
+          <mat-icon>settings</mat-icon>
+          <span>Settings</span>
+        </a>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- ── Main Content Area ────────────────────────────────────────── -->
+  <div class="main-content">
+    <!-- ── Toolbar ────────────────────────────────────────────────── -->
+    <mat-toolbar class="topbar">
+
+      <!-- Left Search Bar -->
+      <div class="search-bar-container">
+        <div class="search-bar">
+          <mat-icon class="search-icon">search</mat-icon>
+          <input type="text" placeholder="Search anything..." />
+          <span class="search-shortcut">⌘ K</span>
+        </div>
+      </div>
+
+      <span class="spacer"></span>
+
+      <div class="topbar-right">
+        <!-- Action Icons -->
+        <button mat-icon-button class="action-icon-btn"><mat-icon>chat_bubble_outline</mat-icon></button>
+        
+        <button mat-icon-button class="action-icon-btn notification-btn" [matMenuTriggerFor]="notificationsMenu">
+          <mat-icon>notifications_none</mat-icon>
+          <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+        </button>
+
+        <button mat-icon-button class="action-icon-btn" [matMenuTriggerFor]="helpMenu" matTooltip="About this system"><mat-icon>help_outline</mat-icon></button>
+
+        <!-- Help / About Panel -->
+        <mat-menu #helpMenu="matMenu" class="help-info-menu" xPosition="before">
+          <div class="help-info-panel" (click)="$event.stopPropagation()">
+            <div class="help-info-header">
+              <img src="Robo-logo.png" alt="Robro" class="help-logo" />
+              <div>
+                <div class="help-title">Robro Systems</div>
+                <div class="help-subtitle">User Management & Image Capture Platform</div>
+              </div>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="help-qa-list">
+              <div class="help-qa-item">
+                <span class="help-q">What is this?</span>
+                <span class="help-a">Robro is a smart workforce management system for managing users, roles, and capturing real-time images from field workers.</span>
+              </div>
+              <div class="help-qa-item">
+                <span class="help-q">Who can use it?</span>
+                <span class="help-a">Admins manage users &amp; view all captures. Supervisors oversee workers. Workers capture and upload images.</span>
+              </div>
+              <div class="help-qa-item">
+                <span class="help-q">Need support?</span>
+                <span class="help-a">Contact your system administrator at <strong>admin&#64;robro.com</strong>.</span>
+              </div>
+            </div>
+            <div class="help-info-footer">Robro Systems v1.0 &mdash; Vision · Intelligence · Control</div>
+          </div>
+        </mat-menu>
+
+        <!-- Redesigned Notifications Dropdown Menu -->
+        <mat-menu #notificationsMenu="matMenu" class="notifications-dropdown-menu" xPosition="before">
+          <div class="notifications-header" (click)="$event.stopPropagation()">
+            <span class="notifications-title">Notifications</span>
+            <button mat-button class="mark-read-btn" *ngIf="unreadCount > 0" (click)="markAllAsRead()">
+              Mark all as read
+            </button>
+          </div>
+          
+          <mat-divider></mat-divider>
+          
+          <div class="notifications-list" (click)="$event.stopPropagation()">
+            <div *ngIf="notifications.length === 0" class="notifications-empty">
+              <span>No notifications yet</span>
+            </div>
+            
+            <div *ngFor="let notif of notifications" class="notification-item-row" [class.unread]="!notif.isRead">
+              <div class="notification-avatar">
+                {{ notif.userId?.name ? notif.userId.name.charAt(0).toUpperCase() : 'U' }}
+              </div>
+              <div class="notification-content-wrap">
+                <span class="notification-message">{{ notif.message }}</span>
+                <span class="notification-time">{{ notif.createdAt | date:'MMM d • h:mm a' }}</span>
+              </div>
+            </div>
+          </div>
+        </mat-menu>
+
+        <!-- Profile dropdown trigger matching reference design -->
+        <div class="profile-trigger" [matMenuTriggerFor]="profileMenu">
+          <div class="profile-avatar">
+            {{ currentUser?.name?.[0]?.toUpperCase() || 'A' }}
+          </div>
+          <div class="profile-info">
+            <span class="profile-name">{{ currentUser?.name }}</span>
+            <span class="profile-role">{{ currentUser?.role }}</span>
+          </div>
+          <mat-icon class="profile-arrow">keyboard_arrow_down</mat-icon>
+        </div>
+
+        <!-- Redesigned Profile Dropdown Menu -->
+        <mat-menu #profileMenu="matMenu" class="profile-dropdown-menu" xPosition="before">
+          <div class="menu-user-header" (click)="$event.stopPropagation()">
+            <div class="menu-avatar">
+              {{ currentUser?.name?.[0]?.toUpperCase() || 'A' }}
+            </div>
+            <div class="menu-user-details">
+              <span class="menu-user-name">{{ currentUser?.name }}</span>
+              <span class="menu-user-email">{{ currentUser?.email || 'superadmin@indiasgo.com' }}</span>
+            </div>
+          </div>
+          
+          <mat-divider></mat-divider>
+          
+          <button mat-menu-item (click)="openThemeDialog()" id="theme-btn" class="dropdown-item">
+            <mat-icon>palette</mat-icon>
+            <span class="dropdown-item-text">Visual Theme</span>
+            <span class="dropdown-theme-value">{{ getThemeName() }}</span>
+            <mat-icon class="dropdown-arrow-right">chevron_right</mat-icon>
+          </button>
+
+          <button mat-menu-item class="dropdown-item">
+            <mat-icon>person_outline</mat-icon>
+            <span class="dropdown-item-text">Profile</span>
+          </button>
+          
+          <mat-divider></mat-divider>
+          
+          <button mat-menu-item (click)="logout()" id="logout-btn" class="dropdown-item logout-item">
+            <mat-icon class="logout-icon">logout</mat-icon>
+            <span class="logout-text">Logout</span>
+          </button>
+        </mat-menu>
+      </div>
+    </mat-toolbar>
+
+    <!-- ── Greeting Banner ────────────────────────────────────────── -->
+    <div class="greeting-banner">
+      <div class="greeting-left">
+        <h1 class="greeting-title">{{ getGreeting() }}</h1>
+        <p class="greeting-subtitle">Manage your team and monitor recent activity across your workspace.</p>
+      </div>
+      <div class="greeting-right">
+        <div class="date-time-box">
+          <mat-icon class="calendar-icon">calendar_today</mat-icon>
+          <div class="date-time-text">
+            <span class="date-part">{{ currentTime | date:'EEE, dd MMM, yyyy' }}</span>
+            <span class="time-part">{{ (currentTime | date:'hh:mm:ss a')?.toLowerCase() }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <!-- ── Page body ─────────────────────────────────────────────── -->
+  <main class="page-body">
+    <!-- Page header -->
+    <div class="page-header">
+      <div class="page-header-left">
+        <h1 class="page-title">User Management</h1>
+        <p class="page-subtitle">{{ users.length }} registered account{{ users.length !== 1 ? 's' : '' }}</p>
+      </div>
+
+      <button
+        mat-flat-button
+        id="create-user-btn"
+        class="create-btn"
+        (click)="openCreateDialog()"
+      >
+        <mat-icon>person_add</mat-icon>
+        Create User
+      </button>
+    </div>
+
+    <!-- Progress bar -->
+    <mat-progress-bar *ngIf="loading" mode="indeterminate" class="top-loader"></mat-progress-bar>
+
+    <!-- Users table card -->
+    <div class="table-card" *ngIf="!loading">
+      <table mat-table [dataSource]="users" class="users-table">
+
+        <!-- Name -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let user">
+            <div class="user-cell">
+              <div class="avatar">{{ user.name[0] | uppercase }}</div>
+              <span class="user-name">{{ user.name }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Email -->
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let user">
+            <span class="email-text">{{ user.email }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Role -->
+        <ng-container matColumnDef="role">
+          <th mat-header-cell *matHeaderCellDef>Role</th>
+          <td mat-cell *matCellDef="let user">
+            <mat-select
+              [(ngModel)]="user.role"
+              (ngModelChange)="onRoleChange(user, $event)"
+              class="role-select"
+              [id]="'role-select-' + user._id"
+              [disabled]="user._id === currentUser?.id"
+            >
+              <mat-option *ngFor="let r of roles" [value]="r">{{ r }}</mat-option>
+            </mat-select>
+          </td>
+        </ng-container>
+
+        <!-- Status -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let user">
+            <span class="status-chip" [class.active]="user.isActive" [class.inactive]="!user.isActive">
+              <span class="status-dot"></span>
+              {{ user.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Created -->
+        <ng-container matColumnDef="created">
+          <th mat-header-cell *matHeaderCellDef>Joined</th>
+          <td mat-cell *matCellDef="let user">
+            <span class="date-text">{{ user.createdAt | date:'MMM d, y' }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let user">
+            <button
+              mat-icon-button
+              [id]="'delete-btn-' + user._id"
+              class="delete-icon-btn"
+              (click)="confirmDelete(user)"
+              [disabled]="user._id === currentUser?.id"
+              matTooltip="Delete user"
+            >
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedCols"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedCols;" class="user-row"></tr>
+      </table>
+
+      <!-- Empty state -->
+      <div class="empty-state" *ngIf="users.length === 0">
+        <mat-icon class="empty-icon">group_off</mat-icon>
+        <h3>No users found</h3>
+        <p>Click "Create User" to add the first account.</p>
+      </div>
+    </div>
+  </main>
+  </div> <!-- main-content -->
+</div>
