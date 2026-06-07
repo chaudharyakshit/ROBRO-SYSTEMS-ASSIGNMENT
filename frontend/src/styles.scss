@@ -669,7 +669,7 @@ input:-webkit-autofill:active {
 }
 
 /* ── Notifications Dropdown Menu ─────────────────────────────────────────── */
-::ng-deep .notifications-dropdown-menu {
+.notifications-dropdown-menu {
   background: var(--bg-menu) !important;
   border: 1px solid var(--border-menu) !important;
   backdrop-filter: blur(24px);
