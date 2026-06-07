@@ -143,7 +143,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
   openCreateDialog(): void {
     const ref = this.dialog.open(CreateUserDialogComponent, {
-      width: '460px',
+      width: '360px',
       disableClose: false,
     });
 

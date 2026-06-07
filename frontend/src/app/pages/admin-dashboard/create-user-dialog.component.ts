@@ -80,19 +80,151 @@ import { MatIconModule }                  from '@angular/material/icon';
     </div>
   `,
   styles: [`
-    .dialog-wrapper { padding: 8px; font-family: 'Outfit', sans-serif; }
-    .dialog-title {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 1.25rem; font-weight: 700; color: var(--color-dialog-title); margin-bottom: 4px;
-      mat-icon { color: #6366f1; }
+    .dialog-wrapper {
+      padding: 16px 20px;
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg-dialog);
     }
-    .dialog-body { display: flex; flex-direction: column; min-width: 360px; padding-top: 8px; }
-    .full-width { width: 100%; margin-bottom: 4px; }
-    .dialog-actions { padding-top: 16px; gap: 10px; }
+    .dialog-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--color-dialog-title);
+      margin: 0 0 16px 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      mat-icon {
+        color: #6366f1;
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+    }
+    .dialog-body {
+      display: flex;
+      flex-direction: column;
+      min-width: 280px;
+      padding: 0 !important;
+      margin: 0 !important;
+      overflow: visible !important;
+    }
+    .full-width {
+      width: 100%;
+      margin-bottom: 4px;
+    }
+    .dialog-actions {
+      padding: 12px 0 0 0 !important;
+      margin: 0 !important;
+      gap: 8px;
+    }
     .confirm-btn {
       background: linear-gradient(90deg, #3b82f6, #6366f1) !important;
       color: #fff !important;
-      border-radius: 10px !important;
+      border-radius: 8px !important;
+      font-size: 0.8rem !important;
+      padding: 0 14px !important;
+      height: 32px !important;
+      font-weight: 600 !important;
+      font-family: 'Outfit', sans-serif !important;
+    }
+    #cancel-dialog-btn {
+      border-radius: 8px !important;
+      font-size: 0.8rem !important;
+      padding: 0 14px !important;
+      height: 32px !important;
+      color: var(--color-text-muted) !important;
+      border-color: var(--border-dialog, rgba(255, 255, 255, 0.08)) !important;
+      font-weight: 600 !important;
+      font-family: 'Outfit', sans-serif !important;
+    }
+
+    ::ng-deep .dialog-wrapper {
+      /* Form field compact style */
+      .mat-mdc-form-field {
+        font-size: 0.8rem !important;
+        width: 100%;
+      }
+
+      /* Wrapper style */
+      .mat-mdc-text-field-wrapper {
+        height: 38px !important;
+        padding: 0 12px !important;
+        background-color: var(--bg-input-field) !important;
+        border-radius: 8px !important;
+        border: 1px solid var(--border-dialog, rgba(255, 255, 255, 0.08)) !important;
+        transition: all 0.2s ease;
+      }
+
+      /* Hover & Focus state */
+      .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+        border-color: #6366f1 !important;
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15) !important;
+      }
+
+      .mat-mdc-form-field-infix {
+        min-height: 38px !important;
+        padding-top: 13px !important;
+        padding-bottom: 0px !important;
+      }
+
+      /* Input styling */
+      .mdc-text-field__input {
+        font-size: 0.8rem !important;
+        color: var(--color-input-text) !important;
+        &::placeholder {
+          color: var(--color-text-muted) !important;
+          opacity: 0.5;
+        }
+      }
+
+      /* Labels styling */
+      .mdc-floating-label {
+        font-size: 0.8rem !important;
+        color: var(--color-input-label) !important;
+        top: 20px !important;
+      }
+
+      .mdc-floating-label--float-above {
+        transform: translateY(-13px) scale(0.75) !important;
+      }
+
+      /* Hide active/default underlines */
+      .mdc-line-ripple,
+      .mdc-line-ripple::before,
+      .mdc-line-ripple::after {
+        display: none !important;
+      }
+
+      /* Error messages container */
+      .mat-mdc-form-field-subscript-wrapper {
+        margin-top: 2px !important;
+        padding: 0 !important;
+        font-size: 0.7rem !important;
+      }
+
+      .mat-mdc-form-field-error-wrapper {
+        padding: 0 !important;
+      }
+
+      /* Dropdown select height adjustments */
+      .mat-mdc-select-trigger {
+        height: 18px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+      }
+
+      .mat-mdc-select-value {
+        font-size: 0.8rem !important;
+        color: var(--color-input-text) !important;
+      }
+
+      .mat-mdc-select-arrow-wrapper {
+        height: 18px !important;
+        display: flex !important;
+        align-items: center !important;
+      }
     }
   `],
 })
