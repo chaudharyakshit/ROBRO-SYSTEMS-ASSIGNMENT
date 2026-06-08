@@ -163,6 +163,13 @@ router.get('/', verifyToken, cacheResponse(60), asyncHandler(async (req, res) =>
   pipeline.push({ $skip: skip });
   pipeline.push({ $limit: limit });
 
+  // Add filepath virtual field since MongoDB aggregation bypasses Mongoose virtuals
+  pipeline.push({
+    $addFields: {
+      filepath: { $concat: ['uploads/', '$filename'] }
+    }
+  });
+
   if (req.user.role === ROLES.ADMIN) {
     pipeline.push({
       $lookup: {

@@ -42,6 +42,10 @@
   <div class="main-content">
     <!-- ── Toolbar ────────────────────────────────────────────────── -->
     <mat-toolbar class="topbar">
+      <!-- Mobile Hamburger Button -->
+      <button mat-icon-button class="mobile-menu-btn" (click)="themeService.toggleSidebar()">
+        <mat-icon>{{ themeService.isSidebarCollapsed ? 'close' : 'menu' }}</mat-icon>
+      </button>
       <!-- Left Search Bar -->
       <div class="search-bar-container">
         <div class="search-bar">

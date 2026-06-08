@@ -797,3 +797,174 @@ input:-webkit-autofill:active {
     }
   }
 }
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* ── MOBILE RESPONSIVE STYLES (≤ 768px) ─────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+/* Mobile hamburger button — hidden on desktop, shown on mobile */
+.mobile-menu-btn {
+  display: none !important;
+  color: var(--color-text-muted) !important;
+  flex-shrink: 0;
+
+  &:hover {
+    color: var(--color-text) !important;
+    background: rgba(128, 128, 128, 0.08) !important;
+  }
+
+  mat-icon {
+    font-size: 22px !important;
+    width: 22px !important;
+    height: 22px !important;
+  }
+}
+
+@media (max-width: 768px) {
+
+  /* ── 1. Zoom reset — disable the 70% desktop zoom on mobile ── */
+  .dashboard,
+  .camera-page {
+    zoom: 1 !important;
+  }
+
+  /* ── 2. Show hamburger button on mobile ── */
+  .mobile-menu-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  /* ── 3. Sidebar becomes an off-screen overlay drawer ── */
+  .sidebar {
+    transform: translateX(-100%);
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    height: 100vh !important;
+    width: 280px !important;
+    z-index: 1100;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    padding: 24px 18px !important;
+    overflow-y: auto;
+  }
+
+  /* When `.collapsed` is toggled on mobile, sidebar slides IN (open) */
+  .dashboard.collapsed .sidebar,
+  .camera-page.collapsed .sidebar {
+    transform: translateX(0) !important;
+    width: 280px !important;
+    padding: 24px 18px !important;
+    align-items: flex-start !important;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.45);
+  }
+
+  /* ── 4. Main content takes full width regardless of sidebar state ── */
+  .main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  .dashboard.collapsed .main-content,
+  .camera-page.collapsed .main-content {
+    margin-left: 0 !important;
+  }
+
+  /* ── 5. Mobile backdrop overlay (appears behind sidebar when open) ── */
+  .dashboard.collapsed::after,
+  .camera-page.collapsed::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1099;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+
+  /* ── 6. Collapsed nav items show labels on mobile overlay ── */
+  .dashboard.collapsed .nav-item,
+  .camera-page.collapsed .nav-item {
+    width: 100% !important;
+    height: auto !important;
+    padding: 10px 16px !important;
+    justify-content: flex-start !important;
+    border-radius: 12px !important;
+
+    mat-icon {
+      margin-right: 12px !important;
+      font-size: 20px !important;
+      width: 20px !important;
+      height: 20px !important;
+    }
+  }
+
+  .dashboard.collapsed .nav-item span,
+  .camera-page.collapsed .nav-item span {
+    display: inline !important;
+  }
+
+  .dashboard.collapsed .nav-item .active-dot,
+  .camera-page.collapsed .nav-item .active-dot {
+    display: block !important;
+  }
+
+  /* ── 7. Topbar responsive ── */
+  .topbar {
+    padding: 0 10px !important;
+    height: 60px !important;
+  }
+
+  /* ── 8. Search bar: not absolutely positioned on mobile ── */
+  .search-bar-container {
+    position: static !important;
+    transform: none !important;
+    width: auto !important;
+    flex: 1 !important;
+    margin: 0 8px !important;
+    max-width: none !important;
+    min-width: 0 !important;
+  }
+
+  /* ── 9. Profile trigger: avatar only on very small screens ── */
+  .profile-info {
+    display: none !important;
+  }
+
+  .profile-arrow {
+    display: none !important;
+  }
+
+  .profile-trigger {
+    padding: 5px 8px !important;
+    gap: 0 !important;
+    border-radius: 50% !important;
+    border-width: 1px !important;
+  }
+
+  /* ── 10. Notifications dropdown full-width on mobile ── */
+  .notifications-dropdown-menu {
+    width: calc(100vw - 24px) !important;
+    max-width: 360px !important;
+  }
+}
+
+/* ── Very small screens (≤ 480px): hide search shortcut ── */
+@media (max-width: 480px) {
+  .search-shortcut {
+    display: none !important;
+  }
+
+  .search-bar input::placeholder {
+    font-size: 0.8rem;
+  }
+
+  .topbar-right {
+    gap: 4px !important;
+  }
+
+  .action-icon-btn {
+    width: 36px !important;
+    height: 36px !important;
+  }
+}

@@ -1014,3 +1014,67 @@ $chip-worker: #22c55e;
   --mdc-snackbar-container-color: #450a0a;
   --mdc-snackbar-supporting-text-color: #fca5a5;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* ── WORKER DASHBOARD MOBILE RESPONSIVE (≤ 768px) ───────────────────────── */
+/* ─────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+
+  /* Topbar compact */
+  .topbar {
+    padding: 0 10px !important;
+    height: 60px !important;
+  }
+
+  /* Search bar inline */
+  .search-bar-container {
+    max-width: none !important;
+    margin: 0 6px !important;
+  }
+
+  /* Page body reduced padding */
+  .page-body {
+    padding: 16px 12px !important;
+  }
+
+  /* Greeting banner stacks vertically */
+  .greeting-banner {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 14px !important;
+    padding: 20px 16px 0 16px !important;
+  }
+
+  .greeting-right {
+    justify-content: flex-start !important;
+  }
+
+  .date-time-box {
+    padding: 10px 14px !important;
+    gap: 10px !important;
+  }
+
+  /* Two-col layout stacks */
+  .two-col {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* Gallery grid smaller min-width */
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  .gallery-skeleton {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
+    gap: 10px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)) !important;
+    gap: 8px !important;
+  }
+}

@@ -742,3 +742,90 @@ $font: 'Outfit', sans-serif;
     }
   }
 }
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* ── ADMIN DASHBOARD MOBILE RESPONSIVE (≤ 768px) ────────────────────────── */
+/* ─────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+
+  /* Topbar fix */
+  .topbar {
+    padding: 0 10px !important;
+    height: 60px !important;
+  }
+
+  /* Search bar inline on mobile */
+  .search-bar-container {
+    max-width: none !important;
+    margin: 0 6px !important;
+  }
+
+  /* Greeting Banner stacks vertically */
+  .greeting-banner {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 14px !important;
+    padding: 20px 16px 0 16px !important;
+  }
+
+  .greeting-right {
+    justify-content: flex-start !important;
+  }
+
+  .date-time-box {
+    padding: 10px 14px !important;
+    gap: 10px !important;
+  }
+
+  .greeting-title {
+    font-size: 1.25rem !important;
+  }
+
+  /* Page body padding reduced */
+  .page-body {
+    padding: 20px 14px !important;
+  }
+
+  /* Page header stacks vertically */
+  .page-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    margin-bottom: 20px !important;
+  }
+
+  .create-btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* Table scroll wrapper — horizontal scroll on mobile */
+  .table-scroll-wrapper {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    border-radius: 20px;
+  }
+
+  .table-card {
+    min-width: 560px !important;
+  }
+
+  /* Empty state compact */
+  .empty-state {
+    padding: 48px 24px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .greeting-title {
+    font-size: 1.1rem !important;
+  }
+
+  .greeting-subtitle {
+    font-size: 0.85rem !important;
+  }
+
+  .page-title {
+    font-size: 1.5rem !important;
+  }
+}

@@ -43,6 +43,10 @@
   <div class="main-content">
     <!-- ── Toolbar ──────────────────────────────────────────────── -->
     <mat-toolbar class="topbar">
+      <!-- Mobile Hamburger Button -->
+      <button mat-icon-button class="mobile-menu-btn" (click)="themeService.toggleSidebar()">
+        <mat-icon>{{ themeService.isSidebarCollapsed ? 'close' : 'menu' }}</mat-icon>
+      </button>
 
       <!-- Left Search Bar -->
       <div class="search-bar-container">
@@ -64,7 +68,38 @@
           <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
         </button>
 
-        <button mat-icon-button class="action-icon-btn"><mat-icon>help_outline</mat-icon></button>
+        <button mat-icon-button class="action-icon-btn" [matMenuTriggerFor]="helpMenu" matTooltip="About this system">
+          <mat-icon>help_outline</mat-icon>
+        </button>
+
+        <!-- Help / About Panel -->
+        <mat-menu #helpMenu="matMenu" class="help-info-menu" xPosition="before">
+          <div class="help-info-panel" (click)="$event.stopPropagation()">
+            <div class="help-info-header">
+              <img src="Robo-logo.png" alt="Robro" class="help-logo" />
+              <div>
+                <div class="help-title">Robro Systems</div>
+                <div class="help-subtitle">User Management & Image Capture Platform</div>
+              </div>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="help-qa-list">
+              <div class="help-qa-item">
+                <span class="help-q">What is this?</span>
+                <span class="help-a">Robro is a smart workforce management system for managing users, roles, and capturing real-time images from field workers.</span>
+              </div>
+              <div class="help-qa-item">
+                <span class="help-q">Who can use it?</span>
+                <span class="help-a">Admins manage users &amp; view all captures. Supervisors oversee workers. Workers capture and upload images.</span>
+              </div>
+              <div class="help-qa-item">
+                <span class="help-q">Need support?</span>
+                <span class="help-a">Contact your system administrator at <strong>admin&#64;robro.com</strong>.</span>
+              </div>
+            </div>
+            <div class="help-info-footer">Robro Systems v1.0 &mdash; Vision · Intelligence · Control</div>
+          </div>
+        </mat-menu>
 
         <!-- Redesigned Notifications Dropdown Menu -->
         <mat-menu #notificationsMenu="matMenu" class="notifications-dropdown-menu" xPosition="before">
@@ -171,7 +206,17 @@
             <div class="error-overlay" *ngIf="cameraError">
               <mat-icon class="error-icon">no_photography</mat-icon>
               <p>{{ cameraError }}</p>
-              <button mat-flat-button id="retry-cam-btn" (click)="startCamera()">Try Again</button>
+              <div class="error-actions">
+                <button mat-flat-button id="retry-cam-btn" (click)="startCamera()">
+                  <mat-icon>videocam</mat-icon> Try Again
+                </button>
+                <button mat-stroked-button id="file-upload-btn" (click)="fileInput.click()" [disabled]="uploading">
+                  <mat-spinner *ngIf="uploading" diameter="18" class="btn-spinner"></mat-spinner>
+                  <mat-icon *ngIf="!uploading">upload_file</mat-icon>
+                  Upload File
+                </button>
+              </div>
+              <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/jpeg,image/png,image/jpg,.jpg,.jpeg,.png" style="display: none;" />
             </div>
 
             <!-- Live badge -->
@@ -189,6 +234,13 @@
                 <mat-icon>camera</mat-icon>
                 Capture Photo
               </button>
+
+              <button mat-stroked-button id="control-upload-btn" class="alt-upload-btn" (click)="controlFileInput.click()" [disabled]="uploading">
+                <mat-spinner *ngIf="uploading" diameter="18" class="btn-spinner"></mat-spinner>
+                <mat-icon *ngIf="!uploading">upload_file</mat-icon>
+                Upload File
+              </button>
+              <input type="file" #controlFileInput (change)="onFileSelected($event)" accept="image/jpeg,image/png,image/jpg,.jpg,.jpeg,.png" style="display: none;" />
             </ng-container>
 
             <ng-container *ngIf="capturedSrc">
@@ -199,7 +251,7 @@
               </button>
 
               <button mat-flat-button id="upload-btn" class="upload-btn" (click)="upload()"
-                [disabled]="uploading">
+                [disabled]="uploading || !imageBlob">
                 <mat-spinner *ngIf="uploading" diameter="18" class="btn-spinner"></mat-spinner>
                 <mat-icon *ngIf="!uploading">cloud_upload</mat-icon>
                 {{ uploading ? 'Uploading…' : 'Upload Photo' }}
@@ -244,7 +296,15 @@
               <div class="gallery-img-wrap">
                 <img [src]="getImageUrl(img.filepath)" [alt]="img.filename" loading="lazy" class="gallery-img" />
                 <div class="gallery-overlay">
-                  <mat-icon class="zoom-icon">open_in_full</mat-icon>
+                  <button mat-icon-button class="overlay-action-btn zoom-btn" (click)="openLightbox(img); $event.stopPropagation()" matTooltip="View photo">
+                    <mat-icon>visibility</mat-icon>
+                  </button>
+                  <button mat-icon-button class="overlay-action-btn download-btn" (click)="downloadImage(img); $event.stopPropagation()" matTooltip="Download photo">
+                    <mat-icon>download</mat-icon>
+                  </button>
+                  <button *ngIf="isAdmin() || isOwnImage(img)" mat-icon-button class="overlay-action-btn delete-btn" (click)="deleteImage(img); $event.stopPropagation()" matTooltip="Delete photo">
+                    <mat-icon>delete</mat-icon>
+                  </button>
                 </div>
               </div>
 

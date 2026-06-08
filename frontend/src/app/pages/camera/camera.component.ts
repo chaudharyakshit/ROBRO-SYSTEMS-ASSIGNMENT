@@ -54,7 +54,10 @@ export type RoleFilter = 'All' | 'Admin' | 'Supervisor' | 'Worker';
     MatDialogModule,
   ],
   templateUrl: './camera.component.html',
-  styleUrls:  ['./camera.component.scss'],
+  styleUrls: [
+    '../admin-dashboard/admin-dashboard.component.scss',
+    './camera.component.scss'
+  ],
 })
 export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
   // 4. Class Properties
@@ -73,7 +76,6 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
   lightboxImage: CapturedImage | null = null;
   activeFilter:  RoleFilter         = 'All';
   readonly filterOptions: RoleFilter[] = ['All', 'Admin', 'Supervisor', 'Worker'];
-  blobUrls: Record<string, string>     = {};
   notifications: NotificationItem[] = [];
   unreadCount = 0;
   private pollInterval: any;
@@ -128,6 +130,11 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
 
   startCamera(): void {
     this.cameraError = '';
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      this.cameraError = 'Camera API is not supported in this browser or requires a secure context (HTTPS).';
+      this.cdr.markForCheck();
+      return;
+    }
     navigator.mediaDevices
       .getUserMedia({ video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } } })
       .then((stream) => {
@@ -194,13 +201,52 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
         };
 
         this.gallery  = [newRecord, ...this.gallery];
-        this.resolveImageBlob(newRecord.filepath);
         this.applyFilter(this.activeFilter);
-        this.snack('Image captured and uploaded!', 'success');
         this.cdr.markForCheck();
       },
       error: (err) => {
         this.uploading = false;
+        this.snack(err.error?.message || 'Upload failed. Please try again.', 'error');
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+    if (this.uploading) {
+      input.value = '';
+      return;
+    }
+    this.uploading = true;
+
+    this.imageService.uploadImage(file, file.name).subscribe({
+      next: (res) => {
+        this.uploading = false;
+        input.value = '';
+
+        const newRecord: CapturedImage = {
+          ...res.data,
+          userId: {
+            _id:       this.currentUser!.id,
+            name:      this.currentUser!.name,
+            email:     this.currentUser!.email,
+            role:      this.currentUser!.role,
+            isActive:  this.currentUser!.isActive,
+            createdAt: new Date(),
+          },
+        };
+
+        this.gallery  = [newRecord, ...this.gallery];
+        this.applyFilter(this.activeFilter);
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.uploading = false;
+        input.value = '';
         this.snack(err.error?.message || 'Upload failed. Please try again.', 'error');
         this.cdr.markForCheck();
       },
@@ -215,7 +261,6 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
         this.gallery        = images;
         this.filtered       = images;
         this.galleryLoading = false;
-        images.forEach((img) => this.resolveImageBlob(img.filepath));
         this.cdr.markForCheck();
       },
       error: (err) => {
@@ -252,32 +297,7 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  resolveImageBlob(filepath: string): void {
-    if (!filepath || this.blobUrls[filepath]) return;
 
-    const apiUrl = this.imageService.getImageUrl(filepath);
-    const token  = this.authService.getToken();
-    const cleanUrl = apiUrl.split('?')[0];
-
-    fetch(cleanUrl, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error('Failed to load image');
-        return res.blob();
-      })
-      .then((blob) => {
-        const objectUrl = URL.createObjectURL(blob);
-        this.blobUrls[filepath] = objectUrl;
-        this.cdr.markForCheck();
-      })
-      .catch(() => {
-        this.blobUrls[filepath] = 'assets/placeholder-image.png';
-        this.cdr.markForCheck();
-      });
-  }
 
   downloadImage(img: CapturedImage): void {
     const blobUrl = this.getImageUrl(img.filepath);
@@ -293,7 +313,6 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
     document.body.appendChild(anchor);
     anchor.click();
     document.body.removeChild(anchor);
-    this.snack('Download started!', 'success');
   }
 
   deleteImage(img: CapturedImage): void {
@@ -306,7 +325,6 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
         this.gallery = this.gallery.filter(i => i._id !== img._id);
         this.filtered = this.filtered.filter(i => i._id !== img._id);
         this.closeLightbox();
-        this.snack('Image deleted successfully.', 'success');
         this.cdr.markForCheck();
       },
       error: (err) => {
@@ -316,7 +334,7 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getImageUrl(filepath: string): string {
-    return this.blobUrls[filepath] || '';
+    return this.imageService.getImageUrl(filepath);
   }
 
   isAdmin(): boolean {
@@ -399,8 +417,6 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
   // 9. ngOnDestroy
   ngOnDestroy(): void {
     this.stopCamera();
-    // Revoke blob URLs to prevent memory leaks
-    Object.values(this.blobUrls).forEach((url) => URL.revokeObjectURL(url));
     if (this.pollInterval) {
       clearInterval(this.pollInterval);
     }

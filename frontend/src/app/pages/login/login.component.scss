@@ -293,7 +293,6 @@
   }
 }
 
-// ── Keyframes ─────────────────────────────────────────────────────────────
 @keyframes fadeSlideUp {
   from {
     opacity: 0;
@@ -302,5 +301,40 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* ── LOGIN PAGE MOBILE RESPONSIVE ────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .login-card {
+    zoom: 1 !important;
+    max-width: 92vw !important;
+    padding: 32px 24px 28px !important;
+    border-radius: 20px !important;
+  }
+
+  .brand-icon,
+  .brand-logo-img {
+    width: 120px !important;
+    height: 120px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 28px 18px 22px !important;
+    border-radius: 16px !important;
+  }
+
+  .brand-icon,
+  .brand-logo-img {
+    width: 100px !important;
+    height: 100px !important;
+  }
+
+  .brand-tagline {
+    font-size: 0.82rem !important;
   }
 }

@@ -425,3 +425,121 @@
     max-width: 320px;
   }
 }
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* ── SETTINGS PAGE MOBILE RESPONSIVE (≤ 768px) ──────────────────────────── */
+/* ─────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+
+  /* Settings page header stacks vertically */
+  .settings-page-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    padding: 16px 14px 0 14px !important;
+  }
+
+  .save-btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* Settings layout: vertical stack instead of side-by-side */
+  .settings-layout {
+    flex-direction: column !important;
+    height: auto !important;
+    overflow: visible !important;
+    padding: 16px 14px !important;
+    gap: 16px !important;
+  }
+
+  /* Settings inner sidebar: horizontal scrolling tab bar */
+  .settings-sidebar {
+    width: 100% !important;
+    flex-shrink: unset !important;
+
+    .settings-menu {
+      flex-direction: row !important;
+      overflow-x: auto !important;
+      white-space: nowrap !important;
+      gap: 6px !important;
+      padding-bottom: 4px !important;
+
+      /* Scrollbar hidden but functional */
+      &::-webkit-scrollbar {
+        height: 3px;
+      }
+
+      li {
+        flex-shrink: 0 !important;
+        padding: 8px 14px !important;
+        font-size: 0.82rem !important;
+        border-radius: 20px !important;
+        gap: 6px !important;
+        border: 1px solid var(--border-table-card);
+        background: var(--bg-table-card);
+
+        mat-icon {
+          font-size: 16px !important;
+          width: 16px !important;
+          height: 16px !important;
+        }
+
+        &.active {
+          background: #1e3a8a !important;
+          border-color: #1e3a8a !important;
+        }
+      }
+    }
+  }
+
+  /* Settings content: remove scrollbar since layout is vertical */
+  .settings-content {
+    padding-right: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* Form grid: single column on mobile */
+  .card-body.form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  /* Permissions grid: single column */
+  .permissions-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  /* Themes grid: 2 columns on mobile */
+  .themes-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 14px !important;
+  }
+
+  /* Settings card compact */
+  .settings-card {
+    padding: 16px !important;
+  }
+
+  /* Card header compact */
+  .card-header {
+    margin-bottom: 16px !important;
+
+    h3 {
+      font-size: 1rem !important;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  /* Single-column themes on very small screens */
+  .themes-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .settings-sidebar .settings-menu li {
+    font-size: 0.75rem !important;
+    padding: 7px 10px !important;
+  }
+}

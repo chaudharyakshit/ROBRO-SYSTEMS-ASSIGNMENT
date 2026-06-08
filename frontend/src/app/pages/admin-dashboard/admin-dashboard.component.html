@@ -39,6 +39,10 @@
   <div class="main-content">
     <!-- ── Toolbar ────────────────────────────────────────────────── -->
     <mat-toolbar class="topbar">
+      <!-- Mobile Hamburger Button -->
+      <button mat-icon-button class="mobile-menu-btn" (click)="themeService.toggleSidebar()">
+        <mat-icon>{{ themeService.isSidebarCollapsed ? 'close' : 'menu' }}</mat-icon>
+      </button>
 
       <!-- Left Search Bar -->
       <div class="search-bar-container">
@@ -208,6 +212,7 @@
     <mat-progress-bar *ngIf="loading" mode="indeterminate" class="top-loader"></mat-progress-bar>
 
     <!-- Users table card -->
+    <div class="table-scroll-wrapper">
     <div class="table-card" *ngIf="!loading">
       <table mat-table [dataSource]="users" class="users-table">
 
@@ -286,13 +291,14 @@
         <tr mat-row *matRowDef="let row; columns: displayedCols;" class="user-row"></tr>
       </table>
 
-      <!-- Empty state -->
       <div class="empty-state" *ngIf="users.length === 0">
         <mat-icon class="empty-icon">group_off</mat-icon>
         <h3>No users found</h3>
         <p>Click "Create User" to add the first account.</p>
       </div>
     </div>
+    </div><!-- /table-scroll-wrapper -->
+
   </main>
   </div> <!-- main-content -->
 </div>
